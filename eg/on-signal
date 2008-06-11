@@ -1,0 +1,8 @@
+#!perl
+use strict;
+use warnings;
+use Enbugger::OnError 'INT';
+
+print "About to enter the debugger.\n";
+system 'kill', 'INT', $$;
+print "Hello world\n";

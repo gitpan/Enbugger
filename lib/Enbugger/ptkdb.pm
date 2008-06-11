@@ -11,4 +11,5 @@ sub debugger {
 PTKDB
 }
 
+sub stop { warn q(Can't stop) }
 () = -.0

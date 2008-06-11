@@ -1,0 +1,15 @@
+#!perl
+use Enbugger;
+use Enbugger::OnError;
+
+eval {
+    # Should not drop into the debugger. We're in an eval.
+    die 'An exception';
+};
+print "Caught: $@\n";
+
+# Should drop into the debugger. We're not in an eval anymore.
+#Enbugger->load_debugger('perl5db');
+Enbugger->stop
+
+

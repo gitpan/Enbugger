@@ -1,0 +1,12 @@
+#!perl
+use Enbugger::OnError;
+
+eval {
+    # Should not drop into the debugger. We're in an eval.
+    die 'Oops!';
+};
+
+print "$@\n";
+
+# Should drop into the debugger. We're not in an eval anymore.
+die;

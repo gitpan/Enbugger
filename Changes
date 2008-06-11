@@ -21,3 +21,21 @@ Revision history for Perl extension Enbugger.
 1.03 Jan 15, 2008
   - Got source handling to work
   - Added some real tests
+
+1.03_01 Jan 20, 2008
+  - 20expect.t doesn't require PadWalker anymore
+  - .perldb is chmod 0644 to defeat perl5db.pl
+  - Black magic DB::proceed_at
+  - Not released yet
+
+1.06 Feb 24, 2008
+  - Work done as part of "Hack Week" at WhitePages.com.
+  - Separated out Enbugger::Restarts
+
+2.01 Mon Jun 09, 2008
+  - Massive change
+  - Rewrote too much of the API so now it's a new major version
+  - Wrote tests for most of everything
+  - Documented (at least with stubs) most of everything
+  - Clarified licence
+  - etc.
