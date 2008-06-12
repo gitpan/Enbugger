@@ -30,7 +30,7 @@ WriteMakefile(
 		      'B::Utils' => 0,
 		     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Enbugger-Restarts-*' },
+    clean               => { FILES => 'Enbugger-*' },
 );
 
 ## Local Variables:
