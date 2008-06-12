@@ -32,10 +32,17 @@ Revision history for Perl extension Enbugger.
   - Work done as part of "Hack Week" at WhitePages.com.
   - Separated out Enbugger::Restarts
 
-2.01 Mon Jun 09, 2008
+2.000 Wed Jun 11, 2008
   - Massive change
   - Rewrote too much of the API so now it's a new major version
   - Wrote tests for most of everything
   - Documented (at least with stubs) most of everything
   - Clarified licence
   - etc.
+
+2.001 Wed Jun 11, 2008
+  - Applied copyright & license text to all source files
+  - Enbugger.pm's compilation is more straightforward
+  - Added Emacs formatting declarations to all source files
+  - Added notes to non-default debugger hooks that they aren't implemented yet
+  - Fix 2.000 notes. They used to say they were 2.001 but *this* is 2.001

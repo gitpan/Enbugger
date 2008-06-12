@@ -1,9 +1,28 @@
 package Enbugger;
 
-BEGIN {
-    $Enbugger::VERSION = '2.000';
+# COPYRIGHT AND LICENCE
+#
+# Copyright (C) 2007,2008 WhitePages.com, Inc. with primary
+# development by Joshua ben Jore.
+#
+# This program is distributed WITHOUT ANY WARRANTY, including but not
+# limited to the implied warranties of merchantability or fitness for
+# a particular purpose.
+#
+# The program is free software.  You may distribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation (either version 2 or any later version)
+# and the Perl Artistic License as published by O’Reilly Media, Inc.
+# Please open the files named gpl-2.0.txt and Artistic for a copy of
+# these licenses.
 
-    require XSLoader;
+BEGIN {
+    $VERSION = '2.001';
+}
+
+use XSLoader ();
+
+BEGIN {
     XSLoader::load( 'Enbugger', $VERSION );
 
 
@@ -48,36 +67,31 @@ BEGIN {
     # making sure it's COP nodes are compiled with "nextstate" instead
     # of "dbstate" hooks.
     Enbugger::_compile_with_dbstate();
+}
 
 
-    # I don't know the real minimum version. I've gotten failure
-    # reports from 5.5 that show it's missing the COP opcodes I'm
-    # altering.
-    require 5.006_000;
+# I don't know the real minimum version. I've gotten failure
+# reports from 5.5 that show it's missing the COP opcodes I'm
+# altering.
+use 5.006_000;
 
+use strict;
+use warnings;
 
-    require strict;
-    strict->import;
-    require warnings;
-    warnings->import;
+use B::Utils ();
+use Carp;
 
-    require B::Utils;
-    require Carp;
-    Carp->import;
+# Public class settings.
+use vars qw( $DefaultDebugger );
 
-    require vars;
-    vars->import(
-		 # Public class settings.
-		 qw( $DefaultDebugger )
-		);
+use constant (); # just to load it.
 
-    require constant;
-
+BEGIN {
     # Compile all of Enbugger:: w/o debugger hooks.
     Enbugger::_compile_with_nextstate();
 }
 
-my( $DEBUGGER, $DEBUGGER_CLASS, %REGISTERED_DEBUGGERS );
+our( $DEBUGGER, $DEBUGGER_CLASS, %REGISTERED_DEBUGGERS );
 
 
 
@@ -113,7 +127,7 @@ SRC
 
 
 
-$DefaultDebugger = 'perl5db';
+BEGIN { $DefaultDebugger = 'perl5db' }
 
 sub DEBUGGER_CLASS () {
     unless ( defined $DEBUGGER_CLASS ) {
@@ -142,25 +156,6 @@ DEBUGGER_CLASS
 
 
 
-__PACKAGE__->register_debugger( 'perl5db' );
-
-
-
-
-
-# TODO: __PACKAGE__->register_debugger( 'ebug' );
-
-
-
-
-
-# TODO: __PACKAGE__->register_debugger( 'sdb' );
-
-
-
-
-
-# TODO: __PACKAGE__->register_debugger( 'ptkdb' );
 
 
 
@@ -419,6 +414,14 @@ sub import {
     }
 }
 
+
+BEGIN { __PACKAGE__->register_debugger( 'perl5db' ) }
+# TODO: __PACKAGE__->register_debugger( 'ebug' );
+# TODO: __PACKAGE__->register_debugger( 'sdb' );
+# TODO: __PACKAGE__->register_debugger( 'ptkdb' );
+
+
+# Anything compiled after this statement runs will be debuggable.
 Enbugger::_compile_with_dbstate();
 
 ## Local Variables:
