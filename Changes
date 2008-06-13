@@ -49,3 +49,6 @@ Revision history for Perl extension Enbugger.
 
 2.002 Wed Jun 11, 2008
   - `make clean` deletes Enbugger-*
+
+2.003 Fri Jun 13, 2008
+  - Installing Enbugger while Enbugger is loaded and running works a bit better now.

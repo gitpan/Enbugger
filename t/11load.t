@@ -51,7 +51,7 @@ my @options = (
 
 for my $args ( @options ) {
     my $test_output = run_with_tmp( @$args );
-    like( $test_output, qr/^\$ok = 1\.$/m);
+    like( $test_output, qr/^(?# )?\$ok = 1\. *$/m);
 }
 
 ## Local Variables:

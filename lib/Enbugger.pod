@@ -363,7 +363,7 @@ You can also look for information at:
 
 =head1 AUTHOR
 
-Josh ben Jore E<gt>jjore@cpan.orgE<lt>
+Joshua ben Jore E<gt>jjore@cpan.orgE<lt>
 
 
 
