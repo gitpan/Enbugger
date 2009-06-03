@@ -17,7 +17,7 @@ package Enbugger;
 # these licenses.
 
 BEGIN {
-    $VERSION = '2.005';
+    $VERSION = '2.006';
 }
 
 use XSLoader ();
@@ -66,7 +66,7 @@ BEGIN {
     # Enbugger namespace is explicitly removed from the debugger by
     # making sure it's COP nodes are compiled with "nextstate" instead
     # of "dbstate" hooks.
-    Enbugger::_compile_with_dbstate();
+    Enbugger->_compile_with_dbstate();
 }
 
 
@@ -76,7 +76,6 @@ BEGIN {
 use 5.006_000;
 
 use strict;
-use warnings;
 
 use B::Utils ();
 use Carp ();
@@ -89,7 +88,7 @@ use constant (); # just to load it.
 
 BEGIN {
     # Compile all of Enbugger:: w/o debugger hooks.
-    Enbugger::_compile_with_nextstate();
+    Enbugger->_compile_with_nextstate();
 }
 
 our( $DEBUGGER, $DEBUGGER_CLASS, %REGISTERED_DEBUGGERS );
@@ -259,17 +258,27 @@ sub load_debugger {
     # debugger by accident. Incidentally... this is a great place
     # to hack if you /do/ want to make debugging a debugger a
     # possibility.
-    Enbugger::_compile_with_nextstate();
+    #
+    # Further, note that some debugger supports have already been loaded 
+    # by __PACKAGE__->register_debugger(...) below. In general, this
+    # is for things I've needed to use myself.
+    Enbugger->_compile_with_nextstate();
     require $debugger_class_file;
     $DEBUGGER_CLASS->_load_debugger;
-    Enbugger->instrument_runtime;
+    $DEBUGGER_CLASS->instrument_runtime;
 
 
     # Subsequent compilation will use pp_dbstate like expected.
-    Enbugger::_compile_with_dbstate();
+    $DEBUGGER_CLASS->_instrumented_ppaddr();
 
     return;
 }
+
+
+
+sub _uninstrumented_ppaddr { $_[0]->_compile_with_nextstate() }
+sub _instrumented_ppaddr   { $_[0]->_compile_with_dbstate()   }
+
 
 
 
@@ -292,7 +301,11 @@ sub register_debugger {
     $enbugger_subclass_file =~ s<::></>g;
     $enbugger_subclass_file .= '.pm';
 
-    # Load it.
+    # Load it. *Assume* PL_ppaddr[OP_NEXTSTATE] is something
+    # useful like Perl_pp_nextstate still.
+    #
+    # TODO: localize PL_ppaddr[OP_NEXTSTATE] during this compilation to 
+    # be Perl_pp_nextstate.
     require $enbugger_subclass_file;
 
 
@@ -456,14 +469,17 @@ sub import {
 }
 
 
-BEGIN { __PACKAGE__->register_debugger( 'perl5db' ) }
+BEGIN {
+    __PACKAGE__->register_debugger( 'perl5db' );
+    __PACKAGE__->register_debugger( 'NYTProf' );
+}
 # TODO: __PACKAGE__->register_debugger( 'ebug' );
 # TODO: __PACKAGE__->register_debugger( 'sdb' );
 # TODO: __PACKAGE__->register_debugger( 'ptkdb' );
 
 
 # Anything compiled after this statement runs will be debuggable.
-Enbugger::_compile_with_dbstate();
+Enbugger->_compile_with_dbstate();
 
 ## Local Variables:
 ## mode: cperl

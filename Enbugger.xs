@@ -185,12 +185,14 @@ From perl, state that future compilation will have or not have breakpoint dbstat
 =cut
 
 void
-Enbugger__compile_with_nextstate()
+Enbugger__compile_with_nextstate(class)
+    SV *class
   CODE:
     compile_with_nextstate();
 
 void
-Enbugger__compile_with_dbstate()
+Enbugger__compile_with_dbstate(class)
+    SV *class
   CODE:
     compile_with_dbstate();
 
@@ -261,6 +263,33 @@ BOOT:
       Perl_init_debugger( aTHX );
     }
 
+MODULE = Enbugger PACKAGE = Enbugger::NYTProf PREFIX = Enbugger_NYTProf_
+
+PROTOTYPES: DISABLE
+
+void
+Enbugger_NYTProf_instrument_op(... )
+  INIT:
+    SV *sv;
+    OP *op;
+    void *a;
+    void *b;
+  CODE:
+    if (!( SvOK(ST(0))
+           && SvROK(ST(0))
+           && SvOK( sv = SvRV(ST(0)) )
+           && SvIOK(sv) )) {
+      return;
+    }
+
+    op = INT2PTR(OP*, SvIV(sv));
+    if ( PL_ppaddr[op->op_type] != op->op_ppaddr ) {
+      op->op_ppaddr = PL_ppaddr[op->op_type];
+    }
+    
+
+
+MODULE = Enbugger		PACKAGE = Enbugger	PREFIX = Enbugger_
 
 ## Local Variables:
 ## mode: c
