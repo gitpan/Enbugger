@@ -29,6 +29,10 @@ BEGIN {
     *import = \ &Exporter::import;
     @EXPORT_OK = qw( read_file run run_with_tmp );
     $EXPORT_TAGS{all} = [ @EXPORT, @EXPORT_OK ];
+
+    require constant;
+    system $^X, '-e', 'close *STDERR; require Term::Readkey; Term::Readkey::GetTerminalSize(*STDOUT)';
+    constant->import( FAKE_TERMINAL => !! $? );
 }
 
 sub run_with_tmp {
@@ -43,8 +47,8 @@ sub run_with_tmp {
       or die "Can't seek $tmp_nm to the beginning: $!";
     my $test_output;
     {
-	local $/;
-	$test_output = <$tmp_fh>;
+        local $/;
+        $test_output = <$tmp_fh>;
     }
     
     close $tmp_fh
@@ -58,42 +62,69 @@ sub run {
     
     # Some environments require special care.
     if ( $^O eq 'MSWin32' ) {
-	# system() does a join( ' ', ... ) first here. I must quote
-	# everything for the C RTL that's going to see this.
-	#
-	# I'm writing this without having a Windows machine around to test
-	# on
-	for my $arg ( @args ) {
-	    $arg =~ s/"/""/g;
-	    $arg = qq("$arg");
-	}
+        # system() does a join( ' ', ... ) first here. I must quote
+        # everything for the C RTL that's going to see this.
+        #
+        # I'm writing this without having a Windows machine around to test
+        # on
+        for my $arg ( @args ) {
+            $arg =~ s/"/""/g;
+            $arg = qq("$arg");
+        }
     }
     else {
-	# ...
-	
-	# Add new OS/environment fiddling here.
+        # ...
+        
+        # Add new OS/environment fiddling here.
     }
     
+    # Provide some rows/column defaults so Term::Readkey in perl5db.pl won't die at CPAN
+    # users.
+    local $ENV{COLUMNS} = $ENV{COLUMNS};
+    local $ENV{ROWS} = $ENV{ROWS};
+    if ( FAKE_TERMINAL ) {
+        $ENV{COLUMNS} ||= 80;
+        $ENV{ROWS}    ||= 25;
+    }
+    else {
+        delete $ENV{COLUMNS} if ! defined $ENV{COLUMNS};
+        delete $ENV{ROWS} if ! defined $ENV{ROWS};
+    }
+
     # Run the test program.
     system { $args[0] } @args;
     if ( $? ) {
-	my $core   = $? & 128;
-	my $signal = $? & 127;
-	my $exit   = $? >> 8;
-	die "Failed to run @args: "
-	  . join ' ',
-	    ( $core ? 'core dumped' : () ),
-	      ( $signal ? "signal: $signal" : () ),
-		( $exit ? "exit: $exit" : () );
+        my $core   = $? & 128;
+        my $signal = $? & 127;
+        my $exit   = $? >> 8;
+
+        print STDERR
+            map {
+                if ( open my $fh, '<', $_ ) {
+                    <$fh>;
+                }
+                else {
+                    warn "Can't open $_: $!";
+                    '';
+                }
+            }
+            grep { -f }
+            @args[1 .. $#args];
+
+        die "Failed to run @args: "
+          . join ' ',
+            ( $core ? 'core dumped' : () ),
+            ( $signal ? "signal: $signal" : () ),
+            ( $exit ? "exit: $exit" : () );
     }
 }
 
 sub read_file {
-  my $file = shift @_;
-  local $/;
-  open my $fh, '<', $file
-    or die "Can't open $file for reading: $!";
-  return scalar readline $fh;
+    my $file = shift @_;
+    local $/;
+    open my $fh, '<', $file
+      or die "Can't open $file for reading: $!";
+    return scalar readline $fh;
 }
 
 () = -.0
