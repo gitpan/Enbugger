@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Enbugger
-version:            2.006
+version:            2.007
 abstract:           Enables the debugger at runtime.
 author:
     - WhitePages.com, Inc <whitepage@cpan.org>
