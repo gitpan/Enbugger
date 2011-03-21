@@ -29,6 +29,14 @@ WriteMakefile(
 		      'Test::More' => 0,
 		      'B::Utils' => 0,
 		     },
+    EXE_FILES => [qw(
+        bin/screen-server
+        bin/screen-server-backend
+        bin/tmux-server
+        bin/tmux-server-backend
+        bin/xterm-server
+        bin/xterm-server-backend
+    )],
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Enbugger-*' },
 );
