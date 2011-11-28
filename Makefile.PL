@@ -23,12 +23,12 @@ WriteMakefile(
     NAME          => 'Enbugger',
     VERSION_FROM  => 'lib/Enbugger.pm',
     ABSTRACT_FROM => 'lib/Enbugger.pod',
-    AUTHOR        => 'WhitePages.com, Inc <whitepage@cpan.org>',
+    AUTHOR        => 'Josh ben Jore <jjore@cpan.org>',
     LICENSE       => 'perl',
     PREREQ_PM     => {
-		      'Test::More' => 0,
-		      'B::Utils' => 0,
-		     },
+              'Test::More' => 0,
+              'B::Utils' => 0,
+             },
     EXE_FILES => [qw(
         bin/screen-server
         bin/screen-server-backend
@@ -39,6 +39,13 @@ WriteMakefile(
     )],
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Enbugger-*' },
+    META_MERGE => {
+        no_index => {
+            directory => [
+                't',
+            ]
+        },
+    },
 );
 
 ## Local Variables:

@@ -44,7 +44,7 @@ set_debug_from_environment(pTHX)
   env_hv = get_hv("main::ENV",0);
   if ( ! env_hv ) {
     /* Does this ever happen? */
-    Perl_croak(aTHX_ "Couldn't fetch %ENV hash");
+    Perl_croak(aTHX_ "Couldn't fetch %%ENV hash");
   }
 
   /* Fetch $ENV{ENBUGGER_DEBUG}. */
@@ -76,7 +76,8 @@ alter_cop( pTHX_ SV *rv, I32 op_type )
 	 && SvOK( sv = SvRV(rv) )
 	 && SvIOK(sv) )) {
     if ( DEBUG ) {
-      PerlIO_printf(Perl_debug_log, "Enbugger: SvOK(o)=%d SvROK(o)=%d SvIOK(SvRV(o))=%d\n",SvOK(sv),SvROK(sv),SvIOK(SvRV(sv)));
+      PerlIO_printf(Perl_debug_log, "Enbugger: SvOK(o)=%"UVuf" SvROK(o)=%"UVuf" SvIOK(SvRV(o))=%"UVuf"\n",
+          SvOK(sv), SvROK(sv), SvIOK(SvRV(sv)));
     }
     Perl_croak(aTHX_ "Expecting a B::COP object");
   }
@@ -132,7 +133,7 @@ compile_with_dbstate() {
 
 
 
-MODULE = Enbugger		PACKAGE = Enbugger	PREFIX = Enbugger_
+MODULE = Enbugger PACKAGE = Enbugger PREFIX = Enbugger_
 
 PROTOTYPES: DISABLE
 
@@ -233,12 +234,12 @@ BOOT:
 
     if ( PL_DBgv ) {
       if ( DEBUG ) {
-	PerlIO_printf(Perl_debug_log,"Enbugger: Debugger is already loaded\n" );
+        PerlIO_printf(Perl_debug_log,"Enbugger: Debugger is already loaded\n" );
       }
     }
     else {
       if ( DEBUG ) {
-	PerlIO_printf(Perl_debug_log,"Enbugger: Initializing debugger during Enbugger boot\n");
+        PerlIO_printf(Perl_debug_log,"Enbugger: Initializing debugger during Enbugger boot\n");
       }
       
       /*
@@ -288,7 +289,7 @@ Enbugger_NYTProf_instrument_op(... )
       op->op_ppaddr = PL_ppaddr[op->op_type];
     }
 
-MODULE = Enbugger		PACKAGE = Enbugger	PREFIX = Enbugger_
+MODULE = Enbugger PACKAGE = Enbugger PREFIX = Enbugger_
 
 ## Local Variables:
 ## mode: c
