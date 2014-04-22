@@ -1,5 +1,5 @@
 package Enbugger::perl5db;
-
+$Enbugger::perl5db::VERSION = '2.014';
 # COPYRIGHT AND LICENCE
 #
 # Copyright (C) 2007,2008 WhitePages.com, Inc. with primary
@@ -45,7 +45,11 @@ sub _load_debugger {
     $class->_compile_with_nextstate();
     require 'perl5db.pl';
     $class->_compile_with_dbstate();
-    
+
+    # FIXME: Why is this fix-up necessary? It's apparently something
+    # funny about how I sometimes choose to set PERLDB_OPTS=noTTY.
+    $DB::LINEINFO = $DB::OUT if ! defined $DB::LINEINFO;
+
     $class->init_debugger;
     
     return;

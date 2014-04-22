@@ -1,5 +1,5 @@
 package Enbugger::ptkdb;
-
+$Enbugger::ptkdb::VERSION = '2.014';
 # COPYRIGHT AND LICENCE
 #
 # Copyright (C) 2007,2008 WhitePages.com, Inc. with primary

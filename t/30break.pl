@@ -2,8 +2,7 @@
 
 # COPYRIGHT AND LICENCE
 #
-# Copyright (C) 2007,2008 WhitePages.com, Inc. with primary
-# development by Joshua ben Jore.
+# Copyright (C) 2014 Joshua ben Jore.
 #
 # This program is distributed WITHOUT ANY WARRANTY, including but not
 # limited to the implied warranties of merchantability or fitness for
@@ -19,8 +18,8 @@
 use strict;
 use warnings;
 use Getopt::Long qw( GetOptions );
-use vars         qw( $Ok );
-use lib          qw( ./t/ );
+use vars         qw( $Caught $Value );
+use lib          qw( ./t );
 
 BEGIN {
 
@@ -28,11 +27,10 @@ BEGIN {
 
 =head1 DESCRIPTION
 
-This test attempts to run the perl5db debugger, gives it some
-commands, then tests that the commands occurred. In general the idea
-is that depending on how the Enbugger.xs code is modifying COP nodes,
-it could have either removed instrumentation from code that should be
-instrumented or done the reverse and instrumented the debugger itself.
+This test attempts to run the perl5db debugger, break on a line, then
+tests that the break occurred where expected. This tests both that
+%{"_<30break.pl"} with L magic and @{"_<30break.pl"} with dual-var
+strings has been created.
 
 The output of this program can be read by another program and used in
 a test.
@@ -61,20 +59,17 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
 
 =cut
 
-
     $ENV{PERLDB_OPTS} = 'noTTY';
 
     # Option parsing.
     my $import      = 1;
     my @import      = ();
     my $loadPerl5Db = 0;
-    my $onError     = 0;
     GetOptions(
         help         => sub { exec {'perldoc'} 'perldoc', $0 },
         noimport     => sub { $import = 0 },
         'import=s'   => \@import,
         load_perl5db => \ $loadPerl5Db,
-        onerror      => \ $onError,
     )
       or exec {'perldoc'} 'perldoc', $0;
 
@@ -82,14 +77,19 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
     require constant;
     constant->import( LoadPerl5Db => !! $loadPerl5Db );
 
-
     # The test is whether the debugger runs and is controlled by my
     # test commands here.
     {
-        no warnings 'once';
-        push @DB::typeahead, '$main::Ok = 1', 'c', 'q';
+	no warnings 'once';
+	@DB::typeahead = (
+	    'l 1-200',
+	    'b 146',
+	    'c',
+	    '$main::Caught = $main::Value',
+	    'c',
+	    'q'
+	    );
     }
-
 
     # All our output will go to *OUT. If this program was given a
     # parameter, we accept it as file that we should write our output too.
@@ -119,49 +119,42 @@ After loading Enbugger, C<< Enbugger->load_perl5db >> will also be called.
     constant->import( UnderTheDebugger => !! $^P );
 
 
-
     # Load Enbugger and completely knacker our process. This little
     # snippet used to just be a static `use Enbugger;' but I moved it
     # up here when it became obvious that I wanted to optionally avoid
     # importing anything.
-    if ( $onError ) {
-        require Enbugger::OnError;
-        Enbugger::OnError->import;
+    require Enbugger;
+    if ( $import ) {
+	Enbugger->import( @import );
     }
-    else {
-        require Enbugger;
-        if ( $import ) {
-            Enbugger->import( @import );
-        }
-    }
-
-    # Now dropping into normal run-time.
 }
 
+# Commands executed here:
+# > l 1-200
+# > b 146
+# > c
+Enbugger->stop;
 
-# Load the perl5db debugger if the user asked for us to do it
-# manually. Normally the ->stop method call will also do this for us.
-if ( LoadPerl5Db ) {
-    Enbugger->load_perl5db;
-}
+$Value = 0;
+$Value = 1;
+$Value = 2;
+$Value = 3;
+
+# Commands executed here when the breakpoint works.
+# > $main::Caught = $main::Value
+# > c
+$Value = 4;
 
 
-# Trigger a breakpoint.
-#
-# At this point, I already supplied some commands to the debugger so
-# it should go set our $ok variable and then continue on
-# automatically.
-Enbugger->stop unless $Ok;
+$Value = 5;
+$Value = 6;
+$Value = 7;
+$Value = 8;
+$Value = 9;
+$Value = 0;
 
+$Caught = 'undef' if ! defined $Caught;
+print "\$Caught = $main::Caught.\n";
 
-# Check that the debugger was stopped and it processed the commands
-# requested of it.
-$Ok = 'undef' if not defined $Ok;
-print "\$ok = $Ok.\n";
-
-## Local Variables:
-## mode: cperl
-## mode: auto-fill
-## cperl-indent-level: 4
-## tab-width: 8
-## End:
+# Commands executed here:
+# > q
