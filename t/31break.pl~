@@ -1,0 +1,37 @@
+#!perl
+BEGIN {
+    @DB::typeahead = (
+	'x \%DB::sub',
+	'x \@DB::sub',
+	'b d',
+	'c',
+	#'use Devel::Peek; Dump(\%DB::sub)',
+	'x [ defined &d ]',
+	'x [ DB::CvGV_name_or_bust("d") ]',
+	'$main::Caught = $main::Value',
+	'c',
+	'q'
+    );
+}
+
+sub a { $main::Value = 1 }
+sub b { $main::Value = 2 }
+sub c { $main::Value = 3 }
+
+sub d { $main::Value = 4 }
+
+sub e { $main::Value = 5 }
+sub f { $main::Value = 6 }
+sub g { $main::Value = 7 }
+
+use Enbugger;
+Enbugger->stop;
+a();
+b();
+c();
+d();
+e();
+f();
+g();
+
+print "\$main::Caught = $main::Caught.\n";

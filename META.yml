@@ -24,4 +24,4 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Enbugger
   homepage: http://search.cpan.org/dist/Enbugger
   repository: git://github.com/jbenjore/enbugger.git
-version: '2.014'
+version: '2.015'
