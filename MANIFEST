@@ -8,7 +8,6 @@ META.yml
 Makefile.PL
 README
 TODO
-basic.pl~
 bin/screen-server
 bin/screen-server-backend
 bin/tmux-server
@@ -39,7 +38,6 @@ t/22signal.t
 t/30break.pl
 t/30break.t
 t/31break.pl
-t/31break.pl~
 t/Term/Rendezvous.pm
 t/Test/Enbugger.pm
 t/nytprof.pl

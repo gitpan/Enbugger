@@ -1,5 +1,5 @@
 package Enbugger::perl5db;
-$Enbugger::perl5db::VERSION = '2.015';
+$Enbugger::perl5db::VERSION = '2.016';
 # COPYRIGHT AND LICENCE
 #
 # Copyright (C) 2007,2008 WhitePages.com, Inc. with primary

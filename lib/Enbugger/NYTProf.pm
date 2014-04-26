@@ -1,5 +1,5 @@
 package Enbugger::NYTProf;
-$Enbugger::NYTProf::VERSION = '2.015';
+$Enbugger::NYTProf::VERSION = '2.016';
 # COPYRIGHT AND LICENCE
 #
 # Copyright (C) 2007,2009 WhitePages.com, Inc. with primary

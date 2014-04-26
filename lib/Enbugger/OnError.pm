@@ -1,5 +1,5 @@
 package Enbugger::OnError;
-$Enbugger::OnError::VERSION = '2.015';
+$Enbugger::OnError::VERSION = '2.016';
 # COPYRIGHT AND LICENCE
 #
 # Copyright (C) 2007,2008 WhitePages.com, Inc. with primary
